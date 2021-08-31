@@ -24,6 +24,10 @@ py_module_initializer!(libnsm, |py, m| {
         fd: i32,
         pub_key_data: PyBytes,
         pub_key_len: u32,
+        user_data: PyBytes,
+        user_len: u32,
+        nonce_data: PyBytes,
+        nonce_len: u32,
     )))?;
     Ok(())
 });
@@ -62,13 +66,20 @@ unsafe fn nsm_get_attestation_doc_py(
     fd: i32,
     pub_key_data: PyBytes,
     pub_key_len: u32,
+    user_data: PyBytes,
+    user_len: u32,
+    nonce_data: PyBytes,
+    nonce_len: u32, 
 ) -> PyResult<PyBytes> {
-    let user_data: *const u8 = ptr::null();
-    let user_data_len = 0;
-    let nonce_data: *const u8 = ptr::null();
-    let nonce_len = 0;
+
     let pub_key_data_rust = pub_key_data.data(py);
-    let pub_key_data_ptr = pub_key_data_rust.as_ptr();
+    let pub_key_data_ptr  = pub_key_data_rust.as_ptr();
+
+    let user_data_rust = user_data.data(py)
+    let user_data_ptr  = user_data_rust.as_ptr();
+
+    let nonce_data_rust = nonce_data.data(py);
+    let nonce_data_ptr  = nonce_data_rust.as_ptr();
 
     let mut buffer = vec![0; 16 * 1024];
     let att_doc_data = buffer.as_mut_ptr();
