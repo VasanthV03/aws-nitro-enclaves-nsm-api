@@ -75,7 +75,7 @@ unsafe fn nsm_get_attestation_doc_py(
     let pub_key_data_rust = pub_key_data.data(py);
     let pub_key_data_ptr  = pub_key_data_rust.as_ptr();
 
-    let user_data_rust = user_data.data(py)
+    let user_data_rust = user_data.data(py);
     let user_data_ptr  = user_data_rust.as_ptr();
 
     let nonce_data_rust = nonce_data.data(py);
