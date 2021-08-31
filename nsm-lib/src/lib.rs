@@ -11,7 +11,6 @@ use nsm_driver::{nsm_get_raw_from_vec, nsm_get_vec_from_raw};
 use nsm_io::{Digest, ErrorCode, Request, Response};
 use serde_bytes::ByteBuf;
 use std::cmp;
-use std::ptr;
 
 use cpython::{PyResult, Python, py_module_initializer, py_fn, PyBytes};
 
@@ -24,8 +23,8 @@ py_module_initializer!(libnsm, |py, m| {
         fd: i32,
         pub_key_data: PyBytes,
         pub_key_len: u32,
-        user_data: PyBytes,
-        user_len: u32,
+        userdata_data: PyBytes,
+        userdata_len: u32,
         nonce_data: PyBytes,
         nonce_len: u32,
     )))?;
@@ -66,8 +65,8 @@ unsafe fn nsm_get_attestation_doc_py(
     fd: i32,
     pub_key_data: PyBytes,
     pub_key_len: u32,
-    user_data: PyBytes,
-    user_len: u32,
+    userdata_data: PyBytes,
+    userdata_len: u32,
     nonce_data: PyBytes,
     nonce_len: u32, 
 ) -> PyResult<PyBytes> {
@@ -75,7 +74,7 @@ unsafe fn nsm_get_attestation_doc_py(
     let pub_key_data_rust = pub_key_data.data(py);
     let pub_key_data_ptr  = pub_key_data_rust.as_ptr();
 
-    let user_data_rust = user_data.data(py);
+    let user_data_rust = userdata_data.data(py);
     let user_data_ptr  = user_data_rust.as_ptr();
 
     let nonce_data_rust = nonce_data.data(py);
@@ -86,8 +85,8 @@ unsafe fn nsm_get_attestation_doc_py(
     let att_doc_len: &mut u32 = &mut (16 * 1024);
 
     let request = Request::Attestation {
-        user_data: get_byte_buf_from_user_data(user_data, user_data_len),
-        nonce: get_byte_buf_from_user_data(nonce_data, nonce_len),
+        user_data: get_byte_buf_from_user_data(user_data_ptr, userdata_len),
+        nonce: get_byte_buf_from_user_data(nonce_data_ptr, nonce_len),
         public_key: get_byte_buf_from_user_data(pub_key_data_ptr, pub_key_len),
     };
 
